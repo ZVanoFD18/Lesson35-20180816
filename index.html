@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Lesson35</title>
+	</head>
+	<body>
+<pre>
+1. String
+
+ При открытии страницы у пользователя запрашивается email адрес, необходимо проверить валидность email и показать результат проверки пользователю.
+
+ Алгоритм проверки должен включать несколько важных этапов:
+	1. Если первый или последний символ "пробел" то его нужно удалить.
+	2. Необходимо убедиться что символ @ существует только 1 при этом не является первым или последним символом.
+	3. Убедиться, что после символа @ существуют еще символы (хотя бы 1), после которых следует символ "." и после которого также есть как минимум один символ.
+
+2. Date
+Запросить дату у пользователя и показать разницу между текущим моментом времени в минутах.
+
+3. Math
+Пользователь вводит в окно цифры разделенные пробелом. Необходимо показать одно случайное число из тех, что ввел пользователь.
+
+4. setInterval and setTimeout
+Убедиться что setInterval и setTimeout могут замедляться при смене активного окна браузера.
+</pre>
+	</body>
+	<script type="text/javascript">
+		'use strict';
+		window.onload = doSelect;
+
+		function doSelect() {
+			let taskIndex = +prompt("Укажите № задачи для выполнения", 1);;
+			let functionName = 'DoTask' + taskIndex;
+			if (eval("typeof " + functionName) === 'function') {
+				eval(functionName + '()');
+				// Прерывание для задачи, которая выполняется асинхронно
+				if(taskIndex === 4){
+					return
+				} else {
+					setTimeout(doSelect, 100);
+				}
+			} else {
+				alert('Завершение работы.')
+			}
+		}
+
+		function DoTask1(){
+			alert('Результат будет выведен в console.log')
+			let eMail = prompt('Укажите eMail', ' ss@a@.com    ');
+			function isValidEmail(eMail){
+				eMail = eMail.trim();
+				if(eMail[0] === '@' || eMail[eMail.length - 1] === '@'){
+					alert('Символ @ в начале или конце строки');
+					return false;
+				}
+
+				let specharPos = eMail.indexOf('@');
+		    if(specharPos < 0){
+					alert('Символ @  не найден.');
+					return false;
+		    }
+		    if(eMail.indexOf('@', specharPos + 1) >= 0){
+					alert('Символ @ встретился более одного раза');
+					return false;
+		    }
+		    if(eMail.indexOf('.', specharPos + 1) < 0){
+					alert('Символ . не встретился после @');
+					return false;
+		    }
+		    //if(eMail.indexOf('.', specharPos + 1) - specharPos < 2){
+	    	if(eMail[specharPos + 1] === '.'){
+					alert('Между символами .@ нет текста');
+					return false;
+		    }
+		    return true;
+			}
+			console.log('Результат проверки eMail', isValidEmail(eMail), eMail);
+		}
+
+		function DoTask2(){
+			alert('Результат будет выведен в console.log')
+			let d = new Date(Date.now() - 1000*60*2);
+			let dUser = d.getFullYear()
+			+ "." + fixedZero(d.getMonth() + 1, 2)
+			+ '.' + fixedZero(d.getDate(), 2)
+			+ " "
+			+ fixedZero(d.getHours(), 2)
+			+ ":" + fixedZero(d.getMinutes(), 2)
+			+ ":" + fixedZero(d.getSeconds(), 2);
+			dUser = prompt('Введите дату в формате "yyyy.mm.dd hh24:mi:ss"', dUser);
+			dUser = dUser.trim();
+			if (!/^\d{4}\.\d{2}.\d{2} \d{2}:\d{2}:\d{2}$/.test(dUser)){
+				alert('Введенное значение имеет неверный формат.');
+				return false;
+			}
+			let year = +dUser.slice(0, 4),
+				month = +dUser.slice(5, 7) - 1,
+				day = +dUser.slice(8, 10),
+				hours = +dUser.slice(11, 13),
+				minutes = +dUser.slice(14, 16),
+				seconds = +dUser.slice(17, 19);
+			dUser = new Date(year, month, day, hours, minutes, seconds);
+
+			let dNow = new Date(),
+				diffMinutes = (dNow - dUser)/1000/60;
+			console.log({
+				dUser : dUser,
+				dNow : dNow,
+				diffMinutes : diffMinutes
+			})
+			function fixedZero(val, len){
+				return '0'.repeat(len - ('' + val).length) + val;
+			}
+		}
+
+		function DoTask3(){
+			alert('Результат будет выведен в console.log')
+			let letters = prompt('Введите числа через пробел', '1 2 3 4 5'),
+				values = letters.split(' '),
+				randIndex = Math.floor( Math.random() * values.length);
+				console.log({
+					letters : letters,
+					values : values,
+					randIndex : randIndex,
+					result : +values[randIndex]
+				})
+		};
+
+		function DoTask4(){
+			alert('Результат будет выведен в console.log')
+			let prevInterval = Date.now();
+			let interval = setInterval(function () {
+				console.log( document.visibilityState, 'setInterval', Date.now() - prevInterval);
+				prevInterval = Date.now();
+			}, 1000);
+			let prevTimeout = Date.now();
+			let timeout = setTimeout(function f() {
+				console.log( document.visibilityState, 'setTimeout', Date.now() - prevTimeout);
+				prevTimeout = Date.now();
+				timeout = setTimeout(f, 1000);
+			}, 1000);
+		}
+
+	</script>
+</html>
